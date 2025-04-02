@@ -1,0 +1,45 @@
+<!-- qr_system/templates/qr_system/home.html -->
+{% extends 'qr_system/base.html' %}
+
+{% block title %}Home - QR Emergency Info{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body text-center">
+                <h1 class="card-title mb-4">QR Emergency Information System</h1>
+                <p class="lead mb-4">Access critical emergency information instantly with a quick scan.</p>
+                
+                <div class="row g-4 mt-3">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Already have a QR code?</h5>
+                                <p class="card-text">Register or log in to manage your emergency information.</p>
+                                <div class="d-grid gap-2">
+                                    <a href="{% url 'register' %}" class="btn btn-primary">Register</a>
+                                    <a href="{% url 'login' %}" class="btn btn-outline-primary">Login</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">How it works</h5>
+                                <ol class="text-start">
+                                    <li>Register with your unique QR code</li>
+                                    <li>Enter your emergency medical information</li>
+                                    <li>Place your QR code sticker on personal items</li>
+                                    <li>In case of emergency, responders can scan your code to access critical info</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

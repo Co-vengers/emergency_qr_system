@@ -1,0 +1,76 @@
+<!-- qr_system/templates/qr_system/dashboard.html -->
+{% extends 'qr_system/base.html' %}
+
+{% block title %}Dashboard - QR Emergency Info{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Dashboard</h1>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Your QR Codes</h3>
+            </div>
+            <div class="card-body">
+                {% if qr_codes %}
+                    <div class="row row-cols-1 row-cols-md-3 g-4">
+                        {% for qr_code in qr_codes %}
+                            <div class="col">
+                                <div class="card h-100">
+                                    {% if qr_code.qr_image %}
+                                        <img src="{{ qr_code.qr_image.url }}" class="card-img-top p-3" alt="QR Code">
+                                    {% else %}
+                                        <div class="card-img-top bg-light p-5 text-center">
+                                            <span class="text-muted">No QR image available</span>
+                                        </div>
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h5 class="card-title">QR Code: {{ qr_code.qr_code_data|truncatechars:12 }}</h5>
+                                        <p class="card-text">Created on: {{ qr_code.created_at|date:"M d, Y" }}</p>
+                                        <a href="{% url 'profile_view' qr_code_data=qr_code.qr_code_data %}" class="btn btn-primary">View Profile</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <p class="mb-0">You don't have any QR codes assigned to your account yet.</p>
+                    </div>
+                    
+                    <h5 class="mt-4">Claim a QR Code</h5>
+                    <form method="post" action="{% url 'claim_qr_code' %}">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <input type="text" name="qr_code_data" class="form-control" placeholder="Enter QR Code Data" required>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary w-100">Claim QR Code</button>
+                            </div>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">Your Emergency Information</h3>
+            </div>
+            <div class="card-body">
+                {% if has_emergency_info %}
+                    <p>You have saved your emergency information.</p>
+                    <a href="{% url 'update_emergency_info' %}" class="btn btn-primary">Update Information</a>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <p class="mb-0">You haven't saved any emergency information yet. This is required for your QR code to work properly.</p>
+                    </div>
+                    <a href="{% url 'create_emergency_info' %}" class="btn btn-success">Create Emergency Info</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

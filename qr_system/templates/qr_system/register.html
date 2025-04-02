@@ -1,0 +1,55 @@
+<!-- qr_system/templates/qr_system/register.html -->
+{% extends 'qr_system/base.html' %}
+
+{% block title %}Register - QR Emergency Info{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Register{% if qr_code_data %} with QR Code{% endif %}</h3>
+            </div>
+            <div class="card-body">
+                {% if qr_code_data %}
+                    <div class="alert alert-info">
+                        <p class="mb-0">You're registering with QR code: <strong>{{ qr_code_data }}</strong></p>
+                    </div>
+                {% endif %}
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            <input type="{{ field.field.widget.input_type|default:'text' }}" 
+                                  name="{{ field.name }}" 
+                                  id="{{ field.id_for_label }}" 
+                                  class="form-control {% if field.errors %}is-invalid{% endif %}"
+                                  {% if field.field.required %}required{% endif %}>
+                            {% if field.errors %}
+                                <div class="invalid-feedback">
+                                    {{ field.errors.0 }}
+                                </div>
+                            {% endif %}
+                            {% if field.help_text %}
+                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </div>
+                </form>
+                
+                <hr>
+                <div class="text-center">
+                    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
