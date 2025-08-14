@@ -4,78 +4,129 @@
 {% block title %}Emergency Profile - QR Emergency Info{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card mb-4 emergency-card">
-            <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
-                <h3 class="mb-0">Emergency Information</h3>
-                {% if is_owner %}
-                    <a href="{% url 'update_emergency_info' %}" class="btn btn-light btn-sm">Edit Information</a>
-                {% endif %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <!-- Main Emergency Card -->
+            <div class="card shadow-sm mb-4 border-0 rounded-lg">
+                <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center py-3">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-star-of-life me-2"></i>
+                        <h3 class="mb-0 fw-bold">Emergency Information</h3>
+                    </div>
+                    {% if is_owner %}
+                        <a href="{% url 'update_emergency_info' %}" class="btn btn-light btn-sm">
+                            <i class="fas fa-edit me-1"></i> Edit
+                        </a>
+                    {% endif %}
+                </div>
+
+                <div class="card-body">
+                    <!-- Important Notice Banner -->
+                    <div class="alert alert-warning d-flex align-items-center mb-4">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <p class="mb-0"><strong>IMPORTANT:</strong> This information is intended for emergency responders only.</p>
+                    </div>
+
+                    <!-- Personal Information Section -->
+                    <div class="card mb-4 border-0 bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold mb-3">
+                                <i class="fas fa-user me-2"></i>Personal Information
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="d-flex">
+                                        <span class="info-label fw-bold me-2">Name:</span>
+                                        <span>{{ emergency_info.name }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex">
+                                        <span class="info-label fw-bold me-2">Contact:</span>
+                                        <span>{{ emergency_info.contact_number }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex">
+                                        <span class="info-label fw-bold me-2">Blood Type:</span>
+                                        <span class="badge bg-danger text-white">{{ emergency_info.blood_type }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex">
+                                        <span class="info-label fw-bold me-2">Last Updated:</span>
+                                        <span>{{ emergency_info.updated_at|date:"M d, Y" }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Medical Conditions Section -->
+                    <div class="card mb-4 border-0">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold mb-3">
+                                <i class="fas fa-heartbeat me-2"></i>Medical Conditions
+                            </h5>
+                            <div class="bg-light p-3 rounded">
+                                {% if emergency_info.medical_conditions %}
+                                    <p class="mb-0">{{ emergency_info.medical_conditions|linebreaks }}</p>
+                                {% else %}
+                                    <p class="text-muted mb-0 fst-italic">None specified</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Allergies Section -->
+                    <div class="card mb-4 border-0">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold mb-3">
+                                <i class="fas fa-allergies me-2"></i>Allergies
+                            </h5>
+                            <div class="bg-light p-3 rounded">
+                                {% if emergency_info.allergies %}
+                                    <p class="mb-0">{{ emergency_info.allergies|linebreaks }}</p>
+                                {% else %}
+                                    <p class="text-muted mb-0 fst-italic">None specified</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Contacts Section -->
+                    <div class="card border-0">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold mb-3">
+                                <i class="fas fa-phone-alt me-2"></i>Emergency Contacts
+                            </h5>
+                            <div class="bg-light p-3 rounded">
+                                {% if emergency_contacts %}
+                                    <ul class="list-group list-group-flush">
+                                        {% for contact in emergency_contacts %}
+                                            <li class="list-group-item bg-transparent border-0 py-2">
+                                                <i class="fas fa-user-friends me-2 text-secondary"></i>{{ contact }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p class="text-muted mb-0 fst-italic">No emergency contacts specified</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="alert alert-warning">
-                    <p class="mb-0"><strong>IMPORTANT:</strong> This information is intended for emergency use only.</p>
+
+            {% if is_owner %}
+                <div class="text-center mb-4">
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                    </a>
                 </div>
-                
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <p><span class="info-label">Name:</span> {{ emergency_info.name }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><span class="info-label">Contact:</span> {{ emergency_info.contact_number }}</p>
-                    </div>
-                </div>
-                
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <p><span class="info-label">Blood Type:</span> {{ emergency_info.blood_type }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><span class="info-label">Last Updated:</span> {{ emergency_info.updated_at|date:"M d, Y" }}</p>
-                    </div>
-                </div>
-                
-                <hr>
-                
-                <h5>Medical Conditions</h5>
-                <div class="bg-light p-3 mb-4 rounded">
-                    {% if emergency_info.medical_conditions %}
-                        <p class="mb-0">{{ emergency_info.medical_conditions|linebreaks }}</p>
-                    {% else %}
-                        <p class="text-muted mb-0">None specified</p>
-                    {% endif %}
-                </div>
-                
-                <h5>Allergies</h5>
-                <div class="bg-light p-3 mb-4 rounded">
-                    {% if emergency_info.allergies %}
-                        <p class="mb-0">{{ emergency_info.allergies|linebreaks }}</p>
-                    {% else %}
-                        <p class="text-muted mb-0">None specified</p>
-                    {% endif %}
-                </div>
-                
-                <h5>Emergency Contacts</h5>
-                <div class="bg-light p-3 rounded">
-                    {% if emergency_contacts %}
-                        <ul class="list-unstyled mb-0">
-                            {% for contact in emergency_contacts %}
-                                <li class="mb-2">{{ contact }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p class="text-muted mb-0">No emergency contacts specified</p>
-                    {% endif %}
-                </div>
-            </div>
+            {% endif %}
         </div>
-        
-        {% if is_owner %}
-            <div class="text-center">
-                <a href="{% url 'dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
-            </div>
-        {% endif %}
     </div>
 </div>
 {% endblock %}

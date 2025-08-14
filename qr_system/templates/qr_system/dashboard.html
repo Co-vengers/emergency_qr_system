@@ -5,72 +5,173 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-md-12">
-        <h1 class="mb-4">Dashboard</h1>
-        
-        <div class="card mb-4">
-            <div class="card-header bg-primary text-white">
-                <h3 class="mb-0">Your QR Codes</h3>
+    <div class="col-md-12 mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="section-title">Your Dashboard</h1>
+            {% if qr_codes %}
+                <a href="{% url 'update_emergency_info' %}" class="btn btn-primary">
+                    <i class="fas fa-edit me-1"></i> Update Emergency Info
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h3 class="mb-0"><i class="fas fa-qrcode me-2"></i>Your QR Codes</h3>
+                <span class="badge bg-light text-primary">{{ qr_codes|length }} Total</span>
             </div>
             <div class="card-body">
                 {% if qr_codes %}
-                    <div class="row row-cols-1 row-cols-md-3 g-4">
+                    <div class="row row-cols-1 row-cols-md-2 g-4">
                         {% for qr_code in qr_codes %}
                             <div class="col">
-                                <div class="card h-100">
+                                <div class="card h-100 qr-card">
+                                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-primary">QR Code</span>
+                                        <small class="text-muted">Created: {{ qr_code.created_at|date:"M d, Y" }}</small>
+                                    </div>
                                     {% if qr_code.qr_image %}
-                                        <img src="{{ qr_code.qr_image.url }}" class="card-img-top p-3" alt="QR Code">
+                                        <div class="text-center p-4">
+                                            <img src="{{ qr_code.qr_image.url }}" class="img-fluid" alt="QR Code" style="max-height: 200px;">
+                                        </div>
                                     {% else %}
                                         <div class="card-img-top bg-light p-5 text-center">
-                                            <span class="text-muted">No QR image available</span>
+                                            <i class="fas fa-image fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">No QR image available</p>
                                         </div>
                                     {% endif %}
                                     <div class="card-body">
-                                        <h5 class="card-title">QR Code: {{ qr_code.qr_code_data|truncatechars:12 }}</h5>
-                                        <p class="card-text">Created on: {{ qr_code.created_at|date:"M d, Y" }}</p>
-                                        <a href="{% url 'profile_view' qr_code_data=qr_code.qr_code_data %}" class="btn btn-primary">View Profile</a>
+                                        <h5 class="card-title">ID: {{ qr_code.qr_code_data|truncatechars:12 }}</h5>
+                                        <p class="card-text small">Scan this code to access your emergency information.</p>
+                                        <div class="d-grid gap-2">
+                                            <a href="{% url 'profile_view' qr_code_data=qr_code.qr_code_data %}" class="btn btn-primary">
+                                                <i class="fas fa-eye me-1"></i> View Profile
+                                            </a>
+                                            <a href="#" class="btn btn-outline-secondary" onclick="downloadQR('{{ qr_code.qr_image.url }}', '{{ qr_code.qr_code_data }}')">
+                                                <i class="fas fa-download me-1"></i> Download QR
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         {% endfor %}
                     </div>
                 {% else %}
-                    <div class="alert alert-info">
-                        <p class="mb-0">You don't have any QR codes assigned to your account yet.</p>
+                    <div class="alert alert-info d-flex align-items-center">
+                        <i class="fas fa-info-circle fa-2x me-3"></i>
+                        <div>
+                            <h5 class="alert-heading">No QR Codes Found</h5>
+                            <p class="mb-0">You don't have any QR codes assigned to your account yet.</p>
+                        </div>
                     </div>
                     
-                    <h5 class="mt-4">Claim a QR Code</h5>
-                    <form method="post" action="{% url 'claim_qr_code' %}">
-                        {% csrf_token %}
-                        <div class="row g-3">
-                            <div class="col-md-8">
-                                <input type="text" name="qr_code_data" class="form-control" placeholder="Enter QR Code Data" required>
-                            </div>
-                            <div class="col-md-4">
-                                <button type="submit" class="btn btn-primary w-100">Claim QR Code</button>
-                            </div>
+                    <div class="card mt-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Claim a QR Code</h5>
                         </div>
-                    </form>
+                        <div class="card-body">
+                            <form method="post" action="{% url 'claim_qr_code' %}" class="row g-3 align-items-center">
+                                {% csrf_token %}
+                                <div class="col-md-8">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="fas fa-key"></i>
+                                        </span>
+                                        <input type="text" name="qr_code_data" class="form-control" placeholder="Enter QR Code ID" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-check-circle me-1"></i> Claim Code
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0"><i class="fas fa-heartbeat me-2"></i>Emergency Status</h3>
+            </div>
+            <div class="card-body">
+                {% if has_emergency_info %}
+                    <div class="alert alert-success d-flex align-items-center mb-4">
+                        <i class="fas fa-check-circle fa-2x me-3"></i>
+                        <div>
+                            <h5 class="alert-heading">Information Ready</h5>
+                            <p class="mb-0">Your emergency information is set up and ready.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <a href="{% url 'update_emergency_info' %}" class="btn btn-primary">
+                            <i class="fas fa-edit me-1"></i> Update Information
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning d-flex align-items-center mb-4">
+                        <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+                        <div>
+                            <h5 class="alert-heading">Action Required</h5>
+                            <p class="mb-0">You haven't saved your emergency information yet. This is required for your QR code to work properly.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <a href="{% url 'create_emergency_info' %}" class="btn btn-success">
+                            <i class="fas fa-plus-circle me-1"></i> Create Emergency Info
+                        </a>
+                    </div>
                 {% endif %}
             </div>
         </div>
         
         <div class="card">
-            <div class="card-header bg-success text-white">
-                <h3 class="mb-0">Your Emergency Information</h3>
+            <div class="card-header bg-info text-white">
+                <h3 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Quick Tips</h3>
             </div>
             <div class="card-body">
-                {% if has_emergency_info %}
-                    <p>You have saved your emergency information.</p>
-                    <a href="{% url 'update_emergency_info' %}" class="btn btn-primary">Update Information</a>
-                {% else %}
-                    <div class="alert alert-warning">
-                        <p class="mb-0">You haven't saved any emergency information yet. This is required for your QR code to work properly.</p>
-                    </div>
-                    <a href="{% url 'create_emergency_info' %}" class="btn btn-success">Create Emergency Info</a>
-                {% endif %}
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex">
+                        <i class="fas fa-print text-primary me-3 mt-1"></i>
+                        <div>Print your QR code and keep it on your wallet, keyring, or medical ID bracelet.</div>
+                    </li>
+                    <li class="list-group-item d-flex">
+                        <i class="fas fa-sync-alt text-primary me-3 mt-1"></i>
+                        <div>Remember to update your medical information regularly.</div>
+                    </li>
+                    <li class="list-group-item d-flex">
+                        <i class="fas fa-user-shield text-primary me-3 mt-1"></i>
+                        <div>Your information is only shown when your QR code is scanned.</div>
+                    </li>
+                    <li class="list-group-item d-flex">
+                        <i class="fas fa-mobile-alt text-primary me-3 mt-1"></i>
+                        <div>Save a screenshot of your QR code on your phone's lock screen.</div>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function downloadQR(imageUrl, qrCodeId) {
+        // Create a temporary anchor element
+        const a = document.createElement('a');
+        a.href = imageUrl;
+        a.download = 'QR_Code_' + qrCodeId + '.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+</script>
 {% endblock %}
