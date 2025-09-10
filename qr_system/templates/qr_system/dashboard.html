@@ -1,4 +1,3 @@
-<!-- qr_system/templates/qr_system/dashboard.html -->
 {% extends 'qr_system/base.html' %}
 
 {% block title %}Dashboard - QR Emergency Info{% endblock %}
@@ -165,7 +164,6 @@
 {% block extra_js %}
 <script>
     function downloadQR(imageUrl, qrCodeId) {
-        // Create a temporary anchor element
         const a = document.createElement('a');
         a.href = imageUrl;
         a.download = 'QR_Code_' + qrCodeId + '.png';

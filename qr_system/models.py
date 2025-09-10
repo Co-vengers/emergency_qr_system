@@ -3,14 +3,14 @@ from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
 
 class User(AbstractUser):
-    """Custom user model that extends Django's built-in user model"""
+    #Custom user model that extends Django's built-in user model
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return self.email
 
 class QRCode(models.Model):
-    """Model for pre-generated QR Codes"""
+    #Model for pre-generated QR Codes
     qr_code_data = models.CharField(max_length=255, unique=True)
     assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='qr_codes')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -27,7 +27,7 @@ class QRCode(models.Model):
         return self.assigned_to is not None
 
 class EmergencyInfo(models.Model):
-    """Model for user's emergency information"""
+    #Model for user's emergency information
     BLOOD_TYPES = [
         ('A+', 'A+'),
         ('A-', 'A-'),
